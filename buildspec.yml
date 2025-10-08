@@ -22,20 +22,25 @@ phases:
 
   pre_build:
     commands:
-      - echo "Preparing Gradle wrapper..."
       - apt-get update -y
       - apt-get install -y dos2unix
       - dos2unix ./gradlew
       - chmod +x ./gradlew
-      - head -5 ./gradlew
-
+      
   build:
     commands:
+      - echo "--- Debugging Java environment ---"
+      - echo "JAVA_HOME is: $JAVA_HOME"
+      - echo "PATH is: $PATH"
+      - echo "Which java: $(which java)"
+      - ls -l "$(which java)"
+      - java -version
+      - echo "--- End Debugging ---"
+      
       - echo "Building release APK..."
-      # Use bash to execute the gradlew script directly
+      # Force JAVACMD to be set before executing the script
+      - export JAVACMD="$JAVA_HOME/bin/java"
       - bash ./gradlew assembleRelease
-
-
 
   post_build:
     commands:
@@ -48,3 +53,4 @@ artifacts:
   files:
     - app/build/outputs/apk/release/app-release.apk
   discard-paths: yes
+
