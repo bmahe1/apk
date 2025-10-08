@@ -22,10 +22,12 @@ phases:
 
   pre_build:
     commands:
-      - apt-get update
+      - echo "Preparing Gradle wrapper..."
+      - apt-get update -y
       - apt-get install -y dos2unix
       - dos2unix ./gradlew
       - chmod +x ./gradlew
+      - head -5 ./gradlew
 
   build:
     commands:
