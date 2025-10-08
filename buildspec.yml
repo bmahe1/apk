@@ -11,7 +11,6 @@ phases:
       java: corretto17
     commands:
       - echo "Installing Android SDK..."
-      # CORRECTED: The wget command now uses a plain URL
       - wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-sdk.zip
       - mkdir -p $HOME/android-sdk/cmdline-tools
       - unzip -q android-sdk.zip -d $HOME/android-sdk/cmdline-tools
@@ -23,15 +22,11 @@ phases:
 
   pre_build:
     commands:
-      # Update package lists for Ubuntu
       - apt-get update
-      # Install the dos2unix utility using apt-get
       - apt-get install -y dos2unix
-      # Convert the gradlew script to the correct Unix format
       - dos2unix ./gradlew
-      # Ensure the script is executable
       - chmod +x ./gradlew
-      
+
   build:
     commands:
       - echo "Building release APK..."
@@ -39,12 +34,10 @@ phases:
 
   post_build:
     commands:
-      # DEBUG: List the contents of the build output directory
-      - echo "Listing files in the build output directory..."
+      - echo "Listing APK files..."
       - find . -type f -name "*.apk"
       - echo "Uploading APK to S3..."
       - aws s3 cp app/build/outputs/apk/release/app-release.apk s3://$S3_BUCKET/$FOLDER_NAME/app-release.apk
-
 
 artifacts:
   files:
