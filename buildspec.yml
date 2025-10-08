@@ -28,12 +28,11 @@ phases:
   pre_build:
     commands:
       - echo "Pre-build phase started"
-      # 1. Navigate to the source directory where your repo is cloned
-      - cd $CODEBUILD_SRC_DIR
-      
-      # 2. List files to confirm you are in the right place (optional but helpful)
+      # Stay in the project root directory ($CODEBUILD_SRC_DIR)
       - echo "Listing contents of source directory:"
-      - ls -R
+      - ls -la
+      # Make the Gradle Wrapper executable. This script must exist at the project root.
+      - chmod +x ./gradlew
       
       # 3. Navigate into your project's app directory
       # Based on your screenshot, the path is apk/app
