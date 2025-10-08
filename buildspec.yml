@@ -4,11 +4,12 @@ phases:
   install:
     runtime-versions:
       java: 17
+      nodejs: 18
     commands:
       - echo "Installing Android SDK..."
-      - wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+      - wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-sdk.zip
       - mkdir -p $HOME/android-sdk/cmdline-tools
-      - unzip -q cmdline-tools.zip -d $HOME/android-sdk/cmdline-tools
+      - unzip -q android-sdk.zip -d $HOME/android-sdk/cmdline-tools
       - mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
       - export ANDROID_HOME=$HOME/android-sdk
       - export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
@@ -16,13 +17,25 @@ phases:
       - yes | sdkmanager --licenses
       - sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
+  pre_build:
+    commands:
+      - echo "Pre-build phase started on $(date)"
+      - cd android
+      - chmod +x gradlew
+      - ./gradlew clean
+
   build:
     commands:
-      - echo "Building APK..."
-      - chmod +x gradlew
+      - echo "🔧 Building release APK..."
       - ./gradlew assembleRelease
+
+  post_build:
+    commands:
+      - echo "✅ Build complete — uploading APK to S3"
+      - cd app/build/outputs/
+      - aws s3 cp apk/release/ s3://$S3_BUCKET/$FOLDER_NAME/ --recursive --exclude "*" --include "*.apk"
 
 artifacts:
   files:
-    - app/build/outputs/apk/release/app-release.apk
+    - android/app/build/outputs/**/*.apk
   discard-paths: no
