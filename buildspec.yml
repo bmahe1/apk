@@ -29,7 +29,7 @@ phases:
     commands:
       - echo "Pre-build phase started on $(date)"
       - ls -R  # verify android folder exists
-      - cd android
+      - cd app
       - chmod +x gradlew
       - ./gradlew clean
 
