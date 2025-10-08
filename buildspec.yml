@@ -2,20 +2,16 @@ version: 0.2
 
 env:
   variables:
-    # Keep your application-specific variables here
     S3_BUCKET: "inst-clone"
     FOLDER_NAME: "calculator-app"
 
 phases:
   install:
     runtime-versions:
-      # This will correctly install and configure Java 17
       java: corretto17
     commands:
       - echo "Installing Android SDK..."
-      # For debugging, you can verify the JAVA_HOME set by CodeBuild
-      - echo "JAVA_HOME is set to: $JAVA_HOME"
-      - java -version
+      # This is the corrected wget command with a plain URL
       - wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-sdk.zip
       - mkdir -p $HOME/android-sdk/cmdline-tools
       - unzip -q android-sdk.zip -d $HOME/android-sdk/cmdline-tools
