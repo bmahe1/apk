@@ -30,9 +30,9 @@ phases:
   build:
     commands:
       - echo "--- Debugging Java environment ---"
-      - echo "JAVA_HOME is: $JAVA_HOME"
-      - echo "PATH is: $PATH"
-      - echo "Which java: $(which java)"
+      - echo "JAVA_HOME is:$JAVA_HOME"
+      - echo "PATH is:$PATH"
+      - echo "Which java:$(which java)"
       - ls -l "$(which java)"
       - java -version
       - echo "--- End Debugging ---"
