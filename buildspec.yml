@@ -27,11 +27,19 @@ phases:
 
   pre_build:
     commands:
-      - echo "Pre-build phase started on $(date)"
-      - ls -R  # verify android folder exists
-      - cd app
-      - chmod +x gradlew
-      - ./gradlew clean
+      - echo "Pre-build phase started"
+      # 1. Navigate to the source directory where your repo is cloned
+      - cd $CODEBUILD_SRC_DIR
+      
+      # 2. List files to confirm you are in the right place (optional but helpful)
+      - echo "Listing contents of source directory:"
+      - ls -R
+      
+      # 3. Navigate into your project's app directory
+      # Based on your screenshot, the path is apk/app
+      - cd apk/app
+      - echo "Successfully changed into the app directory"
+      
 
   build:
     commands:
