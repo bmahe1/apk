@@ -1,55 +1,47 @@
 version: 0.2
 
+env:
+  variables:
+    # SET YOUR S3 BUCKET AND FOLDER NAME HERE
+    S3_BUCKET: "your-s3-bucket-name"
+    FOLDER_NAME: "your-target-folder"
+    # Set JAVA_HOME here to make it available to all phases
+    JAVA_HOME: "/usr/lib/jvm/java-17-amazon-corretto"
+
 phases:
   install:
     runtime-versions:
-      java: 17
-      nodejs: 18
+      java: corretto17
     commands:
-    - echo "Installing Android SDK..."
-    - wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-sdk.zip
-    - mkdir -p $HOME/android-sdk/cmdline-tools
-    - unzip -q android-sdk.zip -d $HOME/android-sdk/cmdline-tools
-    # fix: rename extracted folder to 'latest' so PATH works
-    - mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-    - export ANDROID_HOME=$HOME/android-sdk
-    - export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-    - export PATH=$ANDROID_HOME/platform-tools:$PATH
-    - export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
-    - export PATH=$JAVA_HOME/bin:$PATH
-    - echo "Java version:"
-    - java -version
-    - echo "sdkmanager path check:"
-    - which sdkmanager || ls -R $ANDROID_HOME/cmdline-tools/
-    - yes | sdkmanager --licenses
-    - sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-
+      - echo "Installing Android SDK..."
+      - wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-sdk.zip
+      - mkdir -p $HOME/android-sdk/cmdline-tools
+      - unzip -q android-sdk.zip -d $HOME/android-sdk/cmdline-tools
+      - mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+      - export ANDROID_HOME=$HOME/android-sdk
+      - export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+      - yes | sdkmanager --licenses
+      - sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
   pre_build:
     commands:
-      - echo "Navigating to source directory..."
-      # This is the most important fix: Change to the source code directory
-      - cd $CODEBUILD_SRC_DIR
-      - echo "Current directory:"
-      - pwd
-      - echo "Listing files in source directory:"
-      - ls -la
-      # Now, make the gradlew script executable
+      # Grant execute permissions to the Gradle Wrapper
       - chmod +x ./gradlew
       
   build:
     commands:
       - echo "Building release APK..."
-      # Run the build from the project root
+      # This command will now find and use the correct JAVA_HOME
       - ./gradlew assembleRelease
 
   post_build:
     commands:
-      - echo "✅ Build complete — uploading APK to S3"
-      - cd app/build/outputs/
-      - aws s3 cp apk/release/ s3://$S3_BUCKET/$FOLDER_NAME/ --recursive --exclude "*" --include "*.apk"
+      - echo "✅ Build successful. Uploading APK to S3..."
+      # Copy the generated APK to the specified S3 bucket and folder
+      - aws s3 cp app/build/outputs/apk/release/app-release.apk s3://$S3_BUCKET/$FOLDER_NAME/app-release.apk
 
 artifacts:
   files:
-    - android/app/build/outputs/**/*.apk
-  discard-paths: no
+    # Define the generated APK as a build artifact
+    - app/build/outputs/apk/release/app-release.apk
+  discard-paths: yes
