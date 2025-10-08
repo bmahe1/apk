@@ -32,7 +32,10 @@ phases:
   build:
     commands:
       - echo "Building release APK..."
+      - export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+      - echo "JAVA_HOME=$JAVA_HOME"
       - ./gradlew assembleRelease
+
 
   post_build:
     commands:
