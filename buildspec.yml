@@ -22,8 +22,10 @@ phases:
 
   pre_build:
     commands:
-      # Install the dos2unix utility
-      - yum install -y dos2unix
+      # Update package lists for Ubuntu
+      - apt-get update
+      # Install the dos2unix utility using apt-get
+      - apt-get install -y dos2unix
       # Convert the gradlew script to the correct Unix format
       - dos2unix ./gradlew
       # Ensure the script is executable
@@ -32,7 +34,6 @@ phases:
   build:
     commands:
       - echo "Building release APK..."
-      # This command will now execute correctly
       - ./gradlew assembleRelease
 
   post_build:
