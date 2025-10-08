@@ -39,8 +39,12 @@ phases:
 
   post_build:
     commands:
-      - echo "Build successful. Uploading APK to S3..."
+      # DEBUG: List the contents of the build output directory
+      - echo "Listing files in the build output directory..."
+      - find . -type f -name "*.apk"
+      - echo "Uploading APK to S3..."
       - aws s3 cp app/build/outputs/apk/release/app-release.apk s3://$S3_BUCKET/$FOLDER_NAME/app-release.apk
+
 
 artifacts:
   files:
