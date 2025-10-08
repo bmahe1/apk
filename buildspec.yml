@@ -11,6 +11,7 @@ phases:
       java: corretto17
     commands:
       - echo "Installing Android SDK..."
+      # CORRECTED: The wget command now uses a plain URL
       - wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-sdk.zip
       - mkdir -p $HOME/android-sdk/cmdline-tools
       - unzip -q android-sdk.zip -d $HOME/android-sdk/cmdline-tools
