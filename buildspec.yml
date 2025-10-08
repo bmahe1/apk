@@ -11,7 +11,6 @@ phases:
       java: corretto17
     commands:
       - echo "Installing Android SDK..."
-      # This is the corrected wget command with a plain URL
       - wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-sdk.zip
       - mkdir -p $HOME/android-sdk/cmdline-tools
       - unzip -q android-sdk.zip -d $HOME/android-sdk/cmdline-tools
@@ -23,11 +22,17 @@ phases:
 
   pre_build:
     commands:
+      # Install the dos2unix utility
+      - yum install -y dos2unix
+      # Convert the gradlew script to the correct Unix format
+      - dos2unix ./gradlew
+      # Ensure the script is executable
       - chmod +x ./gradlew
       
   build:
     commands:
       - echo "Building release APK..."
+      # This command will now execute correctly
       - ./gradlew assembleRelease
 
   post_build:
