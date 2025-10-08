@@ -11,8 +11,8 @@ phases:
       - mkdir -p $HOME/android-sdk/cmdline-tools
       - unzip -q android-sdk.zip -d $HOME/android-sdk/cmdline-tools
       - mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-      - export ANDROID_HOME=$HOME/android-sdk
-      - export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+      - export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+      - export PATH=$JAVA_HOME/bin:$PATH
       - export PATH=$ANDROID_HOME/platform-tools:$PATH
       - yes | sdkmanager --licenses
       - sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
